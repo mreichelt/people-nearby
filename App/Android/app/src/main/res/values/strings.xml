@@ -7,4 +7,6 @@
     <string name="title_activity_interests">Your Interests</string>
     <string name="title_activity_person">Person</string>
     <string name="interest_remove">Remove</string>
+    <string name="add_interest">Add</string>
+    <string name="hint_interest">Interest</string>
 </resources>

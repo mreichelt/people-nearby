@@ -1,7 +1,6 @@
 package gdg.people.nearby.interests
 
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -17,7 +16,20 @@ import kotlinx.android.synthetic.main.interests.*
 
 class InterestViewHolder(
         itemView: View,
+        adapter: InterestsAdapter,
         val interest: TextView = itemView.findViewById(R.id.interest)) : RecyclerView.ViewHolder(itemView) {
+
+    private val preferences: Preferences = Preferences(itemView.context)
+
+    init {
+        itemView.findViewById<View>(R.id.interest_remove).setOnClickListener {
+            val person = preferences.getPerson()
+            val newPerson = person.copy(interests = person.interests.minus(interest.text.toString()))
+            preferences.setPerson(newPerson)
+            adapter.person = newPerson
+            adapter.notifyDataSetChanged()
+        }
+    }
 }
 
 class InterestsAdapter(var person: Person) : RecyclerView.Adapter<InterestViewHolder>() {
@@ -26,7 +38,7 @@ class InterestsAdapter(var person: Person) : RecyclerView.Adapter<InterestViewHo
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InterestViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_interest, parent, false)
-        return InterestViewHolder(view)
+        return InterestViewHolder(view, this)
     }
 
     override fun onBindViewHolder(holder: InterestViewHolder, position: Int) {
@@ -38,8 +50,8 @@ class InterestsAdapter(var person: Person) : RecyclerView.Adapter<InterestViewHo
 class InterestsActivity : AppCompatActivity() {
 
     private lateinit var preferences: Preferences
-    // TODO: remove debug person
-    var person: Person = Person("", "Marc", setOf("Android", "Pizza", "Self-Driving Cars"))
+
+    private lateinit var interestsAdapter: InterestsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,12 +59,21 @@ class InterestsActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         preferences = Preferences(this)
-        interests.layoutManager = LinearLayoutManager(this)
-        interests.adapter = InterestsAdapter(person)
+        interestsAdapter = InterestsAdapter(preferences.getPerson())
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+        interests.layoutManager = LinearLayoutManager(this)
+        interests.adapter = interestsAdapter
+
+        button_add_interest.setOnClickListener {
+            val title: String = interest.text.toString()
+            if (title.isNotEmpty()) {
+                val person1 = preferences.getPerson()
+                val newPerson = person1.copy(interests = person1.interests.plus(title))
+                preferences.setPerson(newPerson)
+                interestsAdapter.person = newPerson
+                interestsAdapter.notifyDataSetChanged()
+                interest.setText("")
+            }
         }
     }
 
