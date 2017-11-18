@@ -4,4 +4,6 @@
     <string name="hint_name">Name</string>
     <string name="action_find_people_nearby">Find People nearby!</string>
     <string name="title_activity_dashboard">Dashboard</string>
+    <string name="title_activity_interests">Your Interests</string>
+    <string name="title_activity_person">Person</string>
 </resources>

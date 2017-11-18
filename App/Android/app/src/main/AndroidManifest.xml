@@ -19,7 +19,15 @@
         <activity
             android:name=".dashboard.DashboardActivity"
             android:label="@string/title_activity_dashboard"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".interests.InterestsActivity"
+            android:label="@string/title_activity_interests"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".person.PersonActivity"
+            android:label="@string/title_activity_person"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
