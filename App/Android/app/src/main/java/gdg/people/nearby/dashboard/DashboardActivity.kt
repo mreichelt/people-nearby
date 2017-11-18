@@ -36,10 +36,13 @@ class DashboardActivity : AppCompatActivity() {
             Timber.d("Endpoint found: %s, info: %s", p0, p1)
             val foundPerson: Person = Gson().fromJson(p0, Person::class.java)
             Timber.d("Found person: %s", foundPerson)
+            addPerson(foundPerson)
         }
 
         override fun onEndpointLost(p0: String?) {
             Timber.d("Endpoint lost: %s", p0)
+            val lostPerson: Person = Gson().fromJson(p0, Person::class.java)
+            removePerson(lostPerson)
         }
     }
 
@@ -54,6 +57,13 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 
+    private fun addPerson(person: Person) {
+
+    }
+
+    private fun removePerson(person: Person) {
+
+    }
 
     private fun startNearby() {
         val me: Person? = null
