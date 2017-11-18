@@ -10,11 +10,13 @@ import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
 import com.google.gson.Gson
 import gdg.people.nearby.R
+import gdg.people.nearby.helper.Preferences
 import gdg.people.nearby.interests.InterestsActivity
 import gdg.people.nearby.model.Person
 import kotlinx.android.synthetic.main.content_dashboard.*
 import kotlinx.android.synthetic.main.dashboard.*
 import timber.log.Timber
+import java.nio.charset.Charset
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -29,17 +31,35 @@ class DashboardActivity : AppCompatActivity() {
 
         override fun onConnectionInitiated(p0: String?, p1: ConnectionInfo?) {
             Timber.d("Connection initiated: %s, info: %s", p0, p1)
+            Nearby.getConnectionsClient(baseContext)
+                    .acceptConnection(p0 ?: "", object : PayloadCallback() {
+                        override fun onPayloadReceived(p0: String?, p1: Payload?) {
+                            Timber.d("Payload received: %s, %s", p0, p1)
+                            val otherPerson = Gson().fromJson(String(p1!!.asBytes()!!, Charset.defaultCharset()), Person::class.java)
+                            otherPerson.nearbyId = p0 ?: ""
+                            addPerson(otherPerson)
+                            Nearby.getConnectionsClient(baseContext)
+                                    .disconnectFromEndpoint(p0 ?: "")
+                        }
+
+                        override fun onPayloadTransferUpdate(p0: String?, p1: PayloadTransferUpdate?) {
+
+                        }
+                    })
+                    .addOnSuccessListener {
+                        val me = Preferences(baseContext).getPerson()
+                        Nearby.getConnectionsClient(baseContext)
+                                .sendPayload(p0 ?: "", Payload.fromBytes(Gson().toJson(me).toByteArray()))
+                    }
         }
     }
 
     var endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
         override fun onEndpointFound(p0: String?, p1: DiscoveredEndpointInfo?) {
             try {
-                Timber.d("Endpoint found: %s, info: %s", p0, p1)
-                val foundPerson: Person = Gson().fromJson(p1?.endpointName, Person::class.java)
-                foundPerson.nearbyId = p0 ?: ""
-                Timber.d("Found person: %s", foundPerson)
-                addPerson(foundPerson)
+                Timber.d("Endpoint found: %s, info: %s", p0, p1?.endpointName)
+                Nearby.getConnectionsClient(baseContext).requestConnection(p1?.endpointName ?: "",
+                        p0 ?: "", connectionLifecycleCallback)
             } catch (e: Exception) {
                 Timber.d(e.toString())
             }
@@ -74,7 +94,7 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun startNearby() {
-        val me: Person? = Person("", "Goddchen", setOf("android", "dogs", "atrophotography"))
+        val me = Preferences(this).getPerson()
         Nearby.getConnectionsClient(this)
                 .startAdvertising(
                         Gson().toJson(me),
