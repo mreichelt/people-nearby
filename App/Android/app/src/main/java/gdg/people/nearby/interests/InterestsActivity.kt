@@ -39,7 +39,7 @@ class InterestsActivity : AppCompatActivity() {
 
     private lateinit var preferences: Preferences
     // TODO: remove debug person
-    var person: Person = Person("Marc", setOf("Android", "Pizza", "Self-Driving Cars"))
+    var person: Person = Person("", "Marc", setOf("Android", "Pizza", "Self-Driving Cars"))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
