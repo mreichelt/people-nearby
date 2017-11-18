@@ -1,13 +1,13 @@
 package gdg.people.nearby
 
+import android.app.Application
 import timber.log.Timber
 
-/**
- * Created by goddc on 18.11.2017.
- */
-class Application : android.app.Application() {
+class App : Application() {
+
     override fun onCreate() {
         super.onCreate()
         Timber.plant(Timber.DebugTree())
     }
+
 }
