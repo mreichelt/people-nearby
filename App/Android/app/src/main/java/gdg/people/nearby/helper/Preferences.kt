@@ -13,7 +13,7 @@ class Preferences(context: Context) {
     private val gson: Gson = Gson()
 
     fun getPerson(): Person {
-        val personJson = preferences.getString(PERSON_PREFERENCE, gson.toJson(Person("", emptySet())))
+        val personJson = preferences.getString(PERSON_PREFERENCE, gson.toJson(Person("", "", emptySet())))
         return gson.fromJson(personJson, Person::class.java)
     }
 

@@ -6,14 +6,12 @@ import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.RecyclerView
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
 import com.google.gson.Gson
 import gdg.people.nearby.R
 import gdg.people.nearby.model.Person
 import kotlinx.android.synthetic.main.content_dashboard.*
-
 import kotlinx.android.synthetic.main.dashboard.*
 import timber.log.Timber
 
@@ -37,7 +35,8 @@ class DashboardActivity : AppCompatActivity() {
         override fun onEndpointFound(p0: String?, p1: DiscoveredEndpointInfo?) {
             try {
                 Timber.d("Endpoint found: %s, info: %s", p0, p1)
-                val foundPerson: Person = Gson().fromJson(p0, Person::class.java)
+                val foundPerson: Person = Gson().fromJson(p1?.endpointName, Person::class.java)
+                foundPerson.nearbyId = p0 ?: ""
                 Timber.d("Found person: %s", foundPerson)
                 addPerson(foundPerson)
             } catch (e: Exception) {
@@ -47,8 +46,7 @@ class DashboardActivity : AppCompatActivity() {
 
         override fun onEndpointLost(p0: String?) {
             Timber.d("Endpoint lost: %s", p0)
-            val lostPerson: Person = Gson().fromJson(p0, Person::class.java)
-            removePerson(lostPerson)
+            removePerson(p0 ?: "")
         }
     }
 
@@ -71,12 +69,12 @@ class DashboardActivity : AppCompatActivity() {
         (recyclerView.adapter as DashboardAdapter).add(person)
     }
 
-    private fun removePerson(person: Person) {
-        (recyclerView.adapter as DashboardAdapter).remove(person)
+    private fun removePerson(id: String) {
+        (recyclerView.adapter as DashboardAdapter).remove(id)
     }
 
     private fun startNearby() {
-        val me: Person? = null
+        val me: Person? = Person("", "Goddchen", setOf("android", "dogs", "atrophotography"))
         Nearby.getConnectionsClient(this)
                 .startAdvertising(
                         Gson().toJson(me),

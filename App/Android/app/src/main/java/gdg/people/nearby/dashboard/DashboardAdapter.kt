@@ -75,7 +75,8 @@ class DashboardAdapter(var persons: MutableList<Person>) :
 
     fun itemAtPosition(position: Int): Person = filtered[position]
 
-    fun remove(person: Person) {
+    fun remove(id: String) {
+        val person = filtered.find { id.equals(it.nearbyId) }
         val idx = filtered.indexOf(person)
         if (idx >= 0) {
             persons.removeAt(idx)
