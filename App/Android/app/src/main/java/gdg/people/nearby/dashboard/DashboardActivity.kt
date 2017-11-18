@@ -6,11 +6,13 @@ import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.RecyclerView
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
 import com.google.gson.Gson
 import gdg.people.nearby.R
 import gdg.people.nearby.model.Person
+import kotlinx.android.synthetic.main.content_dashboard.*
 
 import kotlinx.android.synthetic.main.dashboard.*
 import timber.log.Timber
@@ -33,10 +35,14 @@ class DashboardActivity : AppCompatActivity() {
 
     var endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
         override fun onEndpointFound(p0: String?, p1: DiscoveredEndpointInfo?) {
-            Timber.d("Endpoint found: %s, info: %s", p0, p1)
-            val foundPerson: Person = Gson().fromJson(p0, Person::class.java)
-            Timber.d("Found person: %s", foundPerson)
-            addPerson(foundPerson)
+            try {
+                Timber.d("Endpoint found: %s, info: %s", p0, p1)
+                val foundPerson: Person = Gson().fromJson(p0, Person::class.java)
+                Timber.d("Found person: %s", foundPerson)
+                addPerson(foundPerson)
+            } catch (e: Exception) {
+                Timber.d(e.toString())
+            }
         }
 
         override fun onEndpointLost(p0: String?) {
@@ -55,14 +61,18 @@ class DashboardActivity : AppCompatActivity() {
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()
         }
+
+
+        recyclerView.adapter = DashboardAdapter(mutableListOf())
+
     }
 
     private fun addPerson(person: Person) {
-
+        (recyclerView.adapter as DashboardAdapter).add(person)
     }
 
     private fun removePerson(person: Person) {
-
+        (recyclerView.adapter as DashboardAdapter).remove(person)
     }
 
     private fun startNearby() {
@@ -108,5 +118,6 @@ class DashboardActivity : AppCompatActivity() {
         Nearby.getConnectionsClient(this).stopAdvertising()
         Nearby.getConnectionsClient(this).stopDiscovery()
     }
+
 
 }
