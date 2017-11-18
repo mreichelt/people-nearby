@@ -1,8 +1,8 @@
 package gdg.people.nearby.dashboard
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -10,6 +10,7 @@ import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
 import com.google.gson.Gson
 import gdg.people.nearby.R
+import gdg.people.nearby.interests.InterestsActivity
 import gdg.people.nearby.model.Person
 import kotlinx.android.synthetic.main.content_dashboard.*
 import kotlinx.android.synthetic.main.dashboard.*
@@ -55,9 +56,8 @@ class DashboardActivity : AppCompatActivity() {
         setContentView(R.layout.dashboard)
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+        fab.setOnClickListener {
+            startActivity(Intent(this, InterestsActivity::class.java))
         }
 
 
