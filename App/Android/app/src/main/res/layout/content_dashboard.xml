@@ -10,4 +10,3 @@
     android:scrollbarStyle="outsideOverlay"
     app:layoutManager="LinearLayoutManager"
     tools:context=".dashboard.DashboardActivity" />
-

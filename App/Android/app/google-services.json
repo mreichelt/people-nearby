@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "821170250113",
+    "firebase_url": "https://people-nearby-gdg-demo-123456.firebaseio.com",
+    "project_id": "people-nearby-gdg-demo-123456",
+    "storage_bucket": "people-nearby-gdg-demo-123456.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:821170250113:android:4f69bc1b3cb2a0e1",
+        "android_client_info": {
+          "package_name": "gdg.people.nearby"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "821170250113-nn98e54c69n79j5pdpod40e7165d1q9i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0EyZ8RKlQlnRyewGKZ5qIN3xtDtCNZEk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
