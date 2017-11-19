@@ -89,8 +89,8 @@ class DashboardActivity : AppCompatActivity() {
                 object : DashboardAdapter.OnPersonClickedListener {
                     override fun onPersonClicked(person: Person) {
                         val me = preferences.getPerson()
-                        var matchingInterest = me.interests.firstOrNull { person.interests.contains(it) }
-                        if (matchingInterest == null) matchingInterest = person.interests.first()
+                        var matchingInterest = me.interests.map { it.toLowerCase().trim() }.intersect(person.interests.map { it.toLowerCase().trim() }).firstOrNull()
+                        if (matchingInterest == null) matchingInterest = person.interests.first().toLowerCase()
                         startActivity(Intent(applicationContext, FindMeActivity::class.java)
                                 .putExtra("interest", matchingInterest))
                     }
