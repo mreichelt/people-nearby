@@ -116,7 +116,7 @@ class DashboardActivity : AppCompatActivity() {
         val randomInterests = mutableListOf("android", "dogs", "cake", "cats", "polymer", "firebase", "google", "gdg")
         debugPersonsDisposable = Observable.interval(0, 10, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext({ (recyclerView.adapter as DashboardAdapter).clear() })
+                .doOnNext({ (recyclerView.adapter as DashboardAdapter).clear("Person") })
                 .map { Random().nextInt(4) + 1 }
                 .flatMap { Observable.range(1, it) }
                 .map {

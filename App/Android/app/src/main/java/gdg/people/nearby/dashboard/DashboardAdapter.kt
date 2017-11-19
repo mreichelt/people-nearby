@@ -85,9 +85,14 @@ class DashboardAdapter(var persons: MutableList<Person>) :
         }
     }
 
-    fun clear() {
-        persons.clear()
-        filtered.clear()
+    fun clear(prefix: String?) {
+        if (prefix != null) {
+            persons.removeAll { it.name.startsWith(prefix) }
+            filtered.removeAll { it.name.startsWith(prefix) }
+        } else {
+            persons.clear()
+            filtered.clear()
+        }
         notifyDataSetChanged()
     }
 
