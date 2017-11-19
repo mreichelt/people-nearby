@@ -9,9 +9,9 @@ import android.support.v7.app.AppCompatActivity
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
 import com.google.gson.Gson
+import gdg.people.nearby.App.Companion.preferences
 import gdg.people.nearby.R
 import gdg.people.nearby.findme.FindMeActivity
-import gdg.people.nearby.helper.Preferences
 import gdg.people.nearby.interests.InterestsActivity
 import gdg.people.nearby.model.Person
 import io.reactivex.Observable
@@ -72,7 +72,7 @@ class DashboardActivity : AppCompatActivity() {
         (recyclerView.adapter as DashboardAdapter).onCLick =
                 object : DashboardAdapter.OnPersonClickedListener {
                     override fun onPersonClicked(person: Person) {
-                        val me = Preferences(baseContext).getPerson()
+                        val me = preferences.getPerson()
                         var matchingInterest = me.interests.firstOrNull { person.interests.contains(it) }
                         if (matchingInterest == null) matchingInterest = person.interests.first()
                         startActivity(Intent(applicationContext, FindMeActivity::class.java)
@@ -90,7 +90,7 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun startNearby() {
-        val me = Preferences(this).getPerson()
+        val me = preferences.getPerson()
         Nearby.getConnectionsClient(this)
                 .startAdvertising(
                         Gson().toJson(me),

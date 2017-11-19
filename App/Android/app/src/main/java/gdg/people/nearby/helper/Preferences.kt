@@ -7,6 +7,7 @@ import gdg.people.nearby.model.Person
 import timber.log.Timber
 
 class Preferences(context: Context) {
+
     private val PREFERENCES_FILENAME = "gdg.people.nearby.preferences"
 
     private val preferences: SharedPreferences = context.getSharedPreferences(PREFERENCES_FILENAME, Context.MODE_PRIVATE)

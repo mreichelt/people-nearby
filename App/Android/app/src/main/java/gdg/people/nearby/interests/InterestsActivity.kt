@@ -8,8 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import gdg.people.nearby.App.Companion.preferences
 import gdg.people.nearby.R
-import gdg.people.nearby.helper.Preferences
 import gdg.people.nearby.model.Person
 import kotlinx.android.synthetic.main.content_interests.*
 import kotlinx.android.synthetic.main.interests.*
@@ -18,8 +18,6 @@ class InterestViewHolder(
         itemView: View,
         adapter: InterestsAdapter,
         val interest: TextView = itemView.findViewById(R.id.interest)) : RecyclerView.ViewHolder(itemView) {
-
-    private val preferences: Preferences = Preferences(itemView.context)
 
     init {
         itemView.findViewById<View>(R.id.interest_remove).setOnClickListener {
@@ -49,8 +47,6 @@ class InterestsAdapter(var person: Person) : RecyclerView.Adapter<InterestViewHo
 
 class InterestsActivity : AppCompatActivity() {
 
-    private lateinit var preferences: Preferences
-
     private lateinit var interestsAdapter: InterestsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +54,6 @@ class InterestsActivity : AppCompatActivity() {
         setContentView(R.layout.interests)
         setSupportActionBar(toolbar)
 
-        preferences = Preferences(this)
         interestsAdapter = InterestsAdapter(preferences.getPerson())
 
         interests.layoutManager = LinearLayoutManager(this)

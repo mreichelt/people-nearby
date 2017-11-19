@@ -6,9 +6,9 @@ import android.support.v7.app.AppCompatActivity
 import com.google.firebase.database.*
 import com.google.gson.Gson
 import com.jakewharton.rxbinding2.widget.RxTextView
+import gdg.people.nearby.App.Companion.preferences
 import gdg.people.nearby.R
 import gdg.people.nearby.dashboard.DashboardActivity
-import gdg.people.nearby.helper.Preferences
 import gdg.people.nearby.helper.generateId
 import gdg.people.nearby.model.Person
 import gdg.people.nearby.person.PersonActivity
@@ -18,14 +18,12 @@ import java.util.concurrent.TimeUnit
 
 class WelcomeActivity : AppCompatActivity() {
 
-    private lateinit var preferences: Preferences
     private lateinit var personRef: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.welcome)
 
-        preferences = Preferences(this)
         personRef = FirebaseDatabase.getInstance().reference.child(preferences.getId())
         personRef.addValueEventListener(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
@@ -44,6 +42,7 @@ class WelcomeActivity : AppCompatActivity() {
 
         RxTextView.textChanges(name)
                 .debounce(2, TimeUnit.SECONDS)
+                .filter { it.isNotEmpty() }
                 .map { it.toString() }
                 .subscribe({ preferences.setPerson(preferences.getPerson().copy(name = it)) },
                         Timber::e)
