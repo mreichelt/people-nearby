@@ -9,7 +9,7 @@ class ColorHelper {
 
     companion object {
         fun generateColor(interest: String): Int {
-            return Color.HSVToColor(floatArrayOf((interest.hashCode() % 360).toFloat(), 1f, 1f))
+            return Color.HSVToColor(floatArrayOf(Math.abs((interest.hashCode() % 360)).toFloat(), 1f, 1f))
         }
     }
 

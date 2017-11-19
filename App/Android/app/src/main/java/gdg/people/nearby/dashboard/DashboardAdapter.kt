@@ -34,7 +34,11 @@ import gdg.people.nearby.model.Person
 class DashboardAdapter(var persons: MutableList<Person>) :
         RecyclerView.Adapter<DashboardAdapter.ViewHolder>() {
 
-    var onCLick: View.OnClickListener? = null
+    interface OnPersonClickedListener {
+        fun onPersonClicked(person: Person)
+    }
+
+    var onCLick: OnPersonClickedListener? = null
     var onLongClick: View.OnLongClickListener? = null
 
     var filtered = persons.map { i -> i }.toMutableList()
@@ -59,7 +63,7 @@ class DashboardAdapter(var persons: MutableList<Person>) :
         holder!!.titleView.text = item.name
         holder.subtitleView.text = item.interests.joinToString(", ")
 
-        holder.view.setOnClickListener(onCLick)
+        holder.view.setOnClickListener({ onCLick?.onPersonClicked(item) })
         holder.view.setOnLongClickListener(onLongClick)
     }
 

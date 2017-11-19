@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import android.view.View
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
 import com.google.gson.Gson
@@ -70,10 +69,16 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         recyclerView.adapter = DashboardAdapter(mutableListOf())
-        (recyclerView.adapter as DashboardAdapter).onCLick = View.OnClickListener {
-            startActivity(Intent(applicationContext, FindMeActivity::class.java)
-                    .putExtra("interest", "Android"))
-        }
+        (recyclerView.adapter as DashboardAdapter).onCLick =
+                object : DashboardAdapter.OnPersonClickedListener {
+                    override fun onPersonClicked(person: Person) {
+                        val me = Preferences(baseContext).getPerson()
+                        var matchingInterest = me.interests.firstOrNull { person.interests.contains(it) }
+                        if (matchingInterest == null) matchingInterest = person.interests.first()
+                        startActivity(Intent(applicationContext, FindMeActivity::class.java)
+                                .putExtra("interest", matchingInterest))
+                    }
+                }
     }
 
     private fun addPerson(person: Person) {
