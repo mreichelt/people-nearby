@@ -6,10 +6,12 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
 import com.google.gson.Gson
 import gdg.people.nearby.R
+import gdg.people.nearby.findme.FindMeActivity
 import gdg.people.nearby.helper.Preferences
 import gdg.people.nearby.interests.InterestsActivity
 import gdg.people.nearby.model.Person
@@ -61,6 +63,10 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         recyclerView.adapter = DashboardAdapter(mutableListOf())
+        (recyclerView.adapter as DashboardAdapter).onCLick = View.OnClickListener {
+            startActivity(Intent(applicationContext, FindMeActivity::class.java)
+                    .putExtra("interest", "Android"))
+        }
     }
 
     private fun addPerson(person: Person) {
