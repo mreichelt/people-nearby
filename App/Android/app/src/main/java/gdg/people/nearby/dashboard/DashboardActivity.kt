@@ -8,7 +8,10 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
-import com.google.gson.Gson
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import gdg.people.nearby.App.Companion.preferences
 import gdg.people.nearby.R
 import gdg.people.nearby.findme.FindMeActivity
@@ -41,13 +44,24 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 
-    var endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
+    private var endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
         override fun onEndpointFound(p0: String?, p1: DiscoveredEndpointInfo?) {
             try {
                 Timber.d("Endpoint found: %s, info: %s", p0, p1?.endpointName)
-                val foundPerson = Gson().fromJson(p1?.endpointName, Person::class.java)
-                Timber.d("Found person: %s", foundPerson)
-                addPerson(foundPerson)
+                FirebaseDatabase.getInstance().reference.child(p1?.endpointName)
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onCancelled(p0: DatabaseError) {
+                                Timber.w("onCancelled")
+                            }
+
+                            override fun onDataChange(p0: DataSnapshot) {
+                                val foundPerson: Person? = p0.getValue(Person::class.java)
+                                Timber.d("Found person: %s", foundPerson)
+                                if (foundPerson != null) {
+                                    addPerson(foundPerson)
+                                }
+                            }
+                        })
             } catch (e: Exception) {
                 Timber.e(e)
             }
@@ -93,7 +107,7 @@ class DashboardActivity : AppCompatActivity() {
         val me = preferences.getPerson()
         Nearby.getConnectionsClient(this)
                 .startAdvertising(
-                        Gson().toJson(me),
+                        me.id,
                         packageName,
                         connectionLifecycleCallback,
                         AdvertisingOptions(Strategy.P2P_CLUSTER))
