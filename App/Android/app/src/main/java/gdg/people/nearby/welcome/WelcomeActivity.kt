@@ -3,10 +3,9 @@ package gdg.people.nearby.welcome
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.text.Editable
-import android.text.TextWatcher
 import com.google.firebase.database.*
 import com.google.gson.Gson
+import com.jakewharton.rxbinding2.widget.RxTextView
 import gdg.people.nearby.R
 import gdg.people.nearby.dashboard.DashboardActivity
 import gdg.people.nearby.helper.Preferences
@@ -15,6 +14,7 @@ import gdg.people.nearby.model.Person
 import gdg.people.nearby.person.PersonActivity
 import kotlinx.android.synthetic.main.welcome.*
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 class WelcomeActivity : AppCompatActivity() {
 
@@ -42,9 +42,16 @@ class WelcomeActivity : AppCompatActivity() {
             startActivity(Intent(this, DashboardActivity::class.java))
         }
 
-        name.addTextChangedListener(object : TextWatcher {
+        RxTextView.textChanges(name)
+                .debounce(3, TimeUnit.SECONDS)
+                .map { it.toString() }
+                .subscribe({ preferences.setPerson(preferences.getPerson().copy(name = it)) },
+                        Timber::e)
+        /*name.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(editable: Editable?) {
-                preferences.setPerson(preferences.getPerson().copy(name = editable.toString()))
+                if (preferences.getPerson().name != editable.toString()) {
+                    preferences.setPerson(preferences.getPerson().copy(name = editable.toString()))
+                }
             }
 
             override fun beforeTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -53,7 +60,7 @@ class WelcomeActivity : AppCompatActivity() {
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
 
-        })
+        })*/
 
         debug_person.setOnClickListener {
             val person = Person("birte_id", generateId(), "Birte", listOf("AI", "Filme", "Sport"))
