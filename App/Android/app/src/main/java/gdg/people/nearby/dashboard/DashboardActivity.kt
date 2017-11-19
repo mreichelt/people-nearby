@@ -127,8 +127,9 @@ class DashboardActivity : AppCompatActivity() {
                 .map {
                     Collections.shuffle(randomInterests)
                     Person("",
+                            "",
                             String.format(Locale.US, "Person %04d", Math.abs(Random().nextInt() % 10000)),
-                            randomInterests.subList(0, 2).toSet())
+                            randomInterests.subList(0, 2))
                 }
                 .subscribe({
                     (recyclerView.adapter as DashboardAdapter).add(it)
