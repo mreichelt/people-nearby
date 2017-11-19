@@ -41,12 +41,6 @@ class DashboardAdapter(var persons: MutableList<Person>) :
     var onCLick: OnPersonClickedListener? = null
     var onLongClick: View.OnLongClickListener? = null
 
-    var filtered = persons.map { i -> i }.toMutableList()
-
-    init {
-        setHasStableIds(true)
-    }
-
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         onBindViewHolder(holder, position, null)
     }
@@ -59,7 +53,7 @@ class DashboardAdapter(var persons: MutableList<Person>) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder?, position: Int, payloads: MutableList<Any>?) {
-        val item = filtered[position]
+        val item = persons[position]
         holder!!.titleView.text = item.name
         holder.subtitleView.text = item.interests.joinToString(", ")
 
@@ -67,24 +61,16 @@ class DashboardAdapter(var persons: MutableList<Person>) :
         holder.view.setOnLongClickListener(onLongClick)
     }
 
-    override fun getItemCount(): Int = filtered.size
+    override fun getItemCount(): Int = persons.size
 
-    override fun getItemId(position: Int): Long = filtered[position].hashCode().toLong()
+    override fun getItemId(position: Int): Long = persons[position].hashCode().toLong()
 
-    fun replaceAll(accounts: MutableList<Person>) {
-        this.persons = accounts
-        this.filter(null)
-        sort()
-    }
-
-    fun itemAtPosition(position: Int): Person = filtered[position]
 
     fun remove(id: String) {
-        val person = filtered.find { id.equals(it.nearbyId) }
-        val idx = filtered.indexOf(person)
+        val person = persons.find { id.equals(it.nearbyId) }
+        val idx = persons.indexOf(person)
         if (idx >= 0) {
             persons.removeAt(idx)
-            filtered.removeAt(idx)
             notifyItemRemoved(idx)
         }
     }
@@ -92,27 +78,17 @@ class DashboardAdapter(var persons: MutableList<Person>) :
     fun clear(prefix: String?) {
         if (prefix != null) {
             persons.removeAll { it.name.startsWith(prefix) }
-            filtered.removeAll { it.name.startsWith(prefix) }
         } else {
             persons.clear()
-            filtered.clear()
         }
         notifyDataSetChanged()
     }
 
-    fun filter(search: String?) {
-        filtered = if (search == null || search.isBlank()) persons.toMutableList()
-        else persons.filter { i -> i.name.toLowerCase().contains(search) }.toMutableList()
+
+    fun add(person: Person) {
+        persons.removeAll { it.id == person.id }
+        persons.add(person)
         notifyDataSetChanged()
-    }
-
-
-    fun add(item: Person) {
-        if (!persons.any { it.name.equals(item.name) }) {
-            persons.add(item)
-            filtered.add(item)
-            notifyDataSetChanged()
-        }
     }
 
     private fun sort() {

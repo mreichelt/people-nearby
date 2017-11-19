@@ -51,7 +51,7 @@ class DashboardActivity : AppCompatActivity() {
             try {
                 Timber.d("Endpoint found: %s, info: %s", p0, p1?.endpointName)
                 FirebaseDatabase.getInstance().reference.child(p1?.endpointName)
-                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                        .addValueEventListener(object : ValueEventListener {
                             override fun onCancelled(p0: DatabaseError) {
                                 Timber.w("onCancelled")
                             }
@@ -60,7 +60,7 @@ class DashboardActivity : AppCompatActivity() {
                                 val foundPerson: Person? = p0.getValue(Person::class.java)
                                 Timber.d("Found person: %s", foundPerson)
                                 if (foundPerson != null) {
-                                    addPerson(foundPerson)
+                                    replacePerson(foundPerson)
                                 }
                             }
                         })
@@ -71,7 +71,7 @@ class DashboardActivity : AppCompatActivity() {
 
         override fun onEndpointLost(p0: String?) {
             Timber.d("Endpoint lost: %s", p0)
-            removePerson(p0 ?: "")
+            //removePerson(p0 ?: "")
         }
     }
 
@@ -97,12 +97,8 @@ class DashboardActivity : AppCompatActivity() {
                 }
     }
 
-    private fun addPerson(person: Person) {
+    private fun replacePerson(person: Person) {
         (recyclerView.adapter as DashboardAdapter).add(person)
-    }
-
-    private fun removePerson(id: String) {
-        (recyclerView.adapter as DashboardAdapter).remove(id)
     }
 
     private fun startNearby() {
