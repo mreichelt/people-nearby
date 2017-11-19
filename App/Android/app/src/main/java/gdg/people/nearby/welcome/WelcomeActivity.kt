@@ -43,7 +43,7 @@ class WelcomeActivity : AppCompatActivity() {
         }
 
         RxTextView.textChanges(name)
-                .debounce(3, TimeUnit.SECONDS)
+                .debounce(2, TimeUnit.SECONDS)
                 .map { it.toString() }
                 .subscribe({ preferences.setPerson(preferences.getPerson().copy(name = it)) },
                         Timber::e)
