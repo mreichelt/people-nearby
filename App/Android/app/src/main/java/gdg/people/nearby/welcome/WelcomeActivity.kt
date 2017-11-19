@@ -19,41 +19,24 @@ import timber.log.Timber
 class WelcomeActivity : AppCompatActivity() {
 
     private lateinit var preferences: Preferences
-    private val reference: DatabaseReference = FirebaseDatabase.getInstance().reference
     private lateinit var personRef: DatabaseReference
-    private var person: Person? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.welcome)
 
         preferences = Preferences(this)
-        val id = if (preferences.getId().isEmpty()) {
-            val generatedId = generateId()
-            preferences.setId(generatedId)
-            generatedId
-        } else {
-            preferences.getId()
-        }
-        personRef = reference.child(id)
-
+        personRef = FirebaseDatabase.getInstance().reference.child(preferences.getId())
         personRef.addValueEventListener(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
                 Timber.w("onCancelled")
             }
 
             override fun onDataChange(p0: DataSnapshot) {
-                person = p0.getValue(Person::class.java)
-                if (person == null) {
-                    person = Person("", id, "", emptyList())
-                    personRef.setValue(person)
-                } else {
-                    name.setText(person?.name)
-                }
+                name.setText(preferences.getPerson().name)
             }
-
         })
-
+        name.setText(preferences.getPerson().name)
 
         button_find_people_nearby.setOnClickListener {
             startActivity(Intent(this, DashboardActivity::class.java))
@@ -61,10 +44,7 @@ class WelcomeActivity : AppCompatActivity() {
 
         name.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(editable: Editable?) {
-                if (person != null) {
-                    person = person!!.copy(name = editable.toString())
-                    personRef.setValue(person!!)
-                }
+                preferences.setPerson(preferences.getPerson().copy(name = editable.toString()))
             }
 
             override fun beforeTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {

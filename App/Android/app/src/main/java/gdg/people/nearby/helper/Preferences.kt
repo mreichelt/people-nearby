@@ -2,31 +2,48 @@ package gdg.people.nearby.helper
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.google.gson.Gson
+import com.google.firebase.database.*
 import gdg.people.nearby.model.Person
+import timber.log.Timber
 
 class Preferences(context: Context) {
     private val PREFERENCES_FILENAME = "gdg.people.nearby.preferences"
-    private val PERSON_PREFERENCE = "person_preference"
 
     private val preferences: SharedPreferences = context.getSharedPreferences(PREFERENCES_FILENAME, Context.MODE_PRIVATE)
-    private val gson: Gson = Gson()
 
-    fun getId(): String = preferences.getString("id", "")
+    private var person: Person = Person(id = getId())
+    private val reference: DatabaseReference = FirebaseDatabase.getInstance().reference
+    private val personRef: DatabaseReference = reference.child(getId())
+
+    fun getId(): String = preferences.getString("id", generateId())
 
     fun setId(id: String) {
         preferences.edit().putString("id", id).apply()
     }
 
-    @Deprecated("use id")
-    fun getPerson(): Person {
-        val personJson = preferences.getString(PERSON_PREFERENCE, gson.toJson(Person("", generateId(), "GDGUser", emptyList())))
-        return gson.fromJson(personJson, Person::class.java)
+    init {
+        personRef.addValueEventListener(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+                Timber.w("onCancelled")
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                val value = p0.getValue(Person::class.java)
+                if (value != null) {
+                    person = value
+                } else {
+                    personRef.setValue(person)
+                }
+            }
+
+        })
     }
 
-    @Deprecated("use id")
+    fun getPerson(): Person = person
+
     fun setPerson(person: Person) {
-        val personString = gson.toJson(person)
-        preferences.edit().putString(PERSON_PREFERENCE, personString).apply()
+        this.person = person
+        personRef.setValue(person)
     }
+
 }
