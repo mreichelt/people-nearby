@@ -85,6 +85,12 @@ class DashboardAdapter(var persons: MutableList<Person>) :
         }
     }
 
+    fun clear() {
+        persons.clear()
+        filtered.clear()
+        notifyDataSetChanged()
+    }
+
     fun filter(search: String?) {
         filtered = if (search == null || search.isBlank()) persons.toMutableList()
         else persons.filter { i -> i.name.toLowerCase().contains(search) }.toMutableList()
@@ -93,9 +99,11 @@ class DashboardAdapter(var persons: MutableList<Person>) :
 
 
     fun add(item: Person) {
-        persons.add(item)
-        filtered.add(item)
-        notifyDataSetChanged()
+        if (!persons.any { it.name.equals(item.name) }) {
+            persons.add(item)
+            filtered.add(item)
+            notifyDataSetChanged()
+        }
     }
 
     private fun sort() {

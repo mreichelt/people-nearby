@@ -15,11 +15,18 @@ import gdg.people.nearby.findme.FindMeActivity
 import gdg.people.nearby.helper.Preferences
 import gdg.people.nearby.interests.InterestsActivity
 import gdg.people.nearby.model.Person
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.content_dashboard.*
 import kotlinx.android.synthetic.main.dashboard.*
 import timber.log.Timber
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 class DashboardActivity : AppCompatActivity() {
+
+    var debugPersonsDisposable: Disposable? = null
 
     var connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
         override fun onConnectionResult(p0: String?, p1: ConnectionResolution?) {
@@ -106,6 +113,22 @@ class DashboardActivity : AppCompatActivity() {
         } else {
             startNearby()
         }
+        val randomInterests = mutableListOf("android", "dogs", "cake", "cats", "polymer", "firebase", "google", "gdg")
+        debugPersonsDisposable = Observable.interval(0, 10, TimeUnit.SECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext({ (recyclerView.adapter as DashboardAdapter).clear() })
+                .map { Random().nextInt(4) + 1 }
+                .flatMap { Observable.range(1, it) }
+                .map {
+                    Collections.shuffle(randomInterests)
+                    Person("",
+                            String.format(Locale.US, "Person %04d", Math.abs(Random().nextInt() % 10000)),
+                            randomInterests.subList(0, 2).toSet())
+                }
+                .subscribe({
+                    (recyclerView.adapter as DashboardAdapter).add(it)
+                },
+                        Timber::e)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -119,6 +142,9 @@ class DashboardActivity : AppCompatActivity() {
         super.onStop()
         Nearby.getConnectionsClient(this).stopAdvertising()
         Nearby.getConnectionsClient(this).stopDiscovery()
+        if (debugPersonsDisposable?.isDisposed != true) {
+            debugPersonsDisposable?.dispose()
+        }
     }
 
 
