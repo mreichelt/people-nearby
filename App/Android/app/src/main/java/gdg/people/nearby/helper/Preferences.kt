@@ -15,7 +15,12 @@ class Preferences(context: Context) {
     private val reference: DatabaseReference = FirebaseDatabase.getInstance().reference
     private val personRef: DatabaseReference = reference.child(getId())
 
-    fun getId(): String = preferences.getString("id", generateId())
+    fun getId(): String {
+        if (preferences.contains("id").not()) {
+            setId(generateId())
+        }
+        return preferences.getString("id", generateId())
+    }
 
     fun setId(id: String) {
         preferences.edit().putString("id", id).apply()
